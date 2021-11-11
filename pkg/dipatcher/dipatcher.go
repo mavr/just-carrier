@@ -11,6 +11,7 @@ type newMessage struct {
 	To        string `json:"to_recipient" bson:"to_recipient"`
 	Text      string `json:"text" bson:"text"`
 	CreatedAt int64  `json:"created_at" bson:"created_at"`
+	Callback  string `json:"callback_key" bson:"callback_key"`
 }
 
 type dispatcher struct {
@@ -25,12 +26,13 @@ func New(message, chat domain.Publisher) (*dispatcher, error) {
 	}, nil
 }
 
-func (d *dispatcher) PushMessage(msg *domain.Message) error {
+func (d *dispatcher) PushMessage(msg *domain.Message, callbackKey string) error {
 	m := newMessage{
 		From:      msg.From,
 		To:        msg.To,
 		Text:      msg.Text,
 		CreatedAt: msg.CreatedAt.Unix(),
+		Callback: callbackKey,
 	}
 	raw, _ := json.Marshal(m)
 	return d.cliMsg.Publish(raw)

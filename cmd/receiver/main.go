@@ -8,6 +8,7 @@ import (
 	"github.com/mavr/just-carrier/pkg/config"
 	"github.com/mavr/just-carrier/pkg/dipatcher"
 	"github.com/mavr/just-carrier/pkg/http_server"
+	"github.com/mavr/just-carrier/pkg/infra/redis"
 	"github.com/mavr/just-carrier/pkg/infra/rmq"
 	"github.com/mavr/just-carrier/pkg/recv"
 	"go.uber.org/zap"
@@ -43,7 +44,13 @@ func main() {
 		return
 	}
 
-	receiver, err := recv.New(cfg.Telegram(), log, dispatcher)
+	redisDB, err := redis.New(ctx, cfg.Redis())
+	if err != nil {
+		log.Error("create redis", zap.Error(err))
+		return
+	}
+
+	receiver, err := recv.New(cfg.Telegram(), log, dispatcher, redisDB)
 	if err != nil {
 		log.Error("create receiver", zap.Error(err))
 		return

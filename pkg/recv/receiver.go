@@ -22,12 +22,12 @@ type Config struct {
 type recv struct {
 	log *zap.Logger
 
-	repo Repository
+	repo Dipatcher
 
 	bot *tb.Bot
 }
 
-func New(cfg Config, log *zap.Logger, repository Repository) (*recv, error) {
+func New(cfg Config, log *zap.Logger, dispatcher Dipatcher, repository Repository) (*recv, error) {
 	b, err := tb.NewBot(tb.Settings{
 		Token: cfg.Token,
 		Poller: &tb.LongPoller{
@@ -38,12 +38,12 @@ func New(cfg Config, log *zap.Logger, repository Repository) (*recv, error) {
 		return nil, errors.Wrap(err, "create new tg bot")
 	}
 
-	b.Handle("/start", procCommandStart(log, repository))
-	b.Handle("/send", procCommandSend(log, repository))
+	b.Handle("/start", procCommandStart(log, dispatcher))
+	b.Handle("/send", procCommandSend(log, dispatcher, repository))
 
 	return &recv{
 		log:  log,
-		repo: repository,
+		repo: dispatcher,
 		bot:  b,
 	}, nil
 }

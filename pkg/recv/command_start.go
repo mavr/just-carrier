@@ -8,7 +8,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v3"
 )
 
-func procCommandStart(log *zap.Logger, repo Repository) tb.HandlerFunc {
+func procCommandStart(log *zap.Logger, repo Dipatcher) tb.HandlerFunc {
 	return func(ctx tb.Context) error {
 		log.Info("receive start command", zap.String("username", ctx.Sender().Username))
 

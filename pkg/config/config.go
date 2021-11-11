@@ -6,6 +6,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/mavr/just-carrier/pkg/http_server"
+	"github.com/mavr/just-carrier/pkg/infra/redis"
 	"github.com/mavr/just-carrier/pkg/infra/rmq"
 	"github.com/mavr/just-carrier/pkg/recv"
 )
@@ -14,6 +15,7 @@ type Config interface {
 	Rabbit() rmq.Config
 	Telegram() recv.Config
 	HTTPApi() http_server.APIServiceConfig
+	Redis() redis.Config
 }
 
 // Config containing configuration values
@@ -22,19 +24,28 @@ type config struct {
 	App struct {
 		Debug bool `toml:"debug"`
 		Port  int  `toml:"port"`
-	}
+	} `toml:"application"`
 
 	// Telegram bot token
 	Bot struct {
-		TGBotToken string `toml:"telegram_bot_token"`
-	}
+		TGBotToken string `toml:"bot_token"`
+	} `toml:"telegram"`
 
 	// Rabbit
 	RMQ struct {
 		ConnectionString   string `toml:"connection_string"`
 		ExchangeNewChat    string `toml:"new_chat_notification_exchange"`
 		ExchangeNewMessage string `toml:"new_message_notification"`
-	}
+	} `toml:"rabbit"`
+
+	// Redis
+	RedisDatabase struct {
+		Host     string `toml:"host"`
+		Port     int    `toml:"port"`
+		DB       int    `toml:"db"`
+		Username string `toml:"username"`
+		Password string `toml:"password"`
+	} `toml:"redis"`
 }
 
 func New(path string) (Config, error) {
@@ -78,5 +89,15 @@ func (c *config) HTTPApi() http_server.APIServiceConfig {
 		AppVersion:   "0.0.1",
 		AppDebugMode: c.App.Debug,
 		ServPort:     c.App.Port,
+	}
+}
+
+func (c *config) Redis() redis.Config {
+	return redis.Config{
+		Host:     c.RedisDatabase.Host,
+		Port:     c.RedisDatabase.Port,
+		Username: c.RedisDatabase.Username,
+		Password: c.RedisDatabase.Password,
+		Database: c.RedisDatabase.DB,
 	}
 }

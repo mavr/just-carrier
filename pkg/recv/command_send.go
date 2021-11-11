@@ -11,7 +11,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v3"
 )
 
-func procCommandSend(log *zap.Logger, repo Repository) tb.HandlerFunc {
+func procCommandSend(log *zap.Logger, dispatcher Dipatcher, repo Repository) tb.HandlerFunc {
 	return func(ctx tb.Context) error {
 		text := ctx.Message()
 		if text == nil {
@@ -38,12 +38,14 @@ func procCommandSend(log *zap.Logger, repo Repository) tb.HandlerFunc {
 			CreatedAt: ctx.Message().Time(),
 		}
 
-		if err := repo.PushMessage(msg); err != nil {
+		callbackKey, err := repo.SetSendCallback(ctx.Sender().Username, to)
+		if err != nil {
+			log.Error("set callback", zap.Error(err))
+		}
+
+		if err := dispatcher.PushMessage(msg, callbackKey); err != nil {
 			log.Error("push message", zap.Error(err))
 		}
-		//if err := ctx.Send("Hello World!"); err != nil {
-		//	log.Error("send message", zap.Error(err))
-		//}
 
 		return nil
 	}
