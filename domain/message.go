@@ -6,7 +6,7 @@ import (
 )
 
 type Message struct {
-	From      int64       `json:"from" bson:"from"`
+	From      int64     `json:"from" bson:"from"`
 	To        string    `json:"to_recipient" bson:"to_recipient"`
 	Text      string    `json:"text" bson:"text"`
 	Processed bool      `json:"is_processed" bson:"is_processed"`

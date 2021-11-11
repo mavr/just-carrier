@@ -13,7 +13,9 @@ const (
 )
 
 type Config struct {
-	ConnectionString string
+	ConnectionString          string
+	ExchangeNewChatNotificate string
+	ExchangeMessage           string
 }
 
 type rmq struct {

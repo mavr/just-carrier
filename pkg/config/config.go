@@ -22,9 +22,6 @@ type config struct {
 	App struct {
 		Debug bool `toml:"debug"`
 		Port  int  `toml:"port"`
-
-		ExchangeNewChat    string `toml:"new_chat_notification_exchange"`
-		ExchangeNewMessage string `toml:"new_message_notification"`
 	}
 
 	// Telegram bot token
@@ -34,7 +31,9 @@ type config struct {
 
 	// Rabbit
 	RMQ struct {
-		ConnectionString string `toml:"connection_string"`
+		ConnectionString   string `toml:"connection_string"`
+		ExchangeNewChat    string `toml:"new_chat_notification_exchange"`
+		ExchangeNewMessage string `toml:"new_message_notification"`
 	}
 }
 
@@ -61,7 +60,9 @@ func New(path string) (Config, error) {
 
 func (c *config) Rabbit() rmq.Config {
 	return rmq.Config{
-		ConnectionString: c.RMQ.ConnectionString,
+		ConnectionString:          c.RMQ.ConnectionString,
+		ExchangeNewChatNotificate: c.RMQ.ExchangeNewChat,
+		ExchangeMessage:           c.RMQ.ExchangeNewMessage,
 	}
 }
 

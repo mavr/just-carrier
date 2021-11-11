@@ -3,10 +3,8 @@ package recv
 import (
 	"time"
 
-	"github.com/mavr/just-carrier/pkg/staff_msg"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
-	"golang.org/x/text/language"
 	tb "gopkg.in/tucnak/telebot.v3"
 )
 
@@ -40,12 +38,7 @@ func New(cfg Config, log *zap.Logger, repository Repository) (*recv, error) {
 		return nil, errors.Wrap(err, "create new tg bot")
 	}
 
-	b.Handle("/start", func(ctx tb.Context) error {
-		log.Info("receive start command", zap.String("lang_code", ctx.Sender().LanguageCode))
-
-		tag := language.Make(ctx.Sender().LanguageCode)
-		return ctx.Send(staff_msg.Translates.WelcomeMessage(tag), tb.ModeMarkdown)
-	})
+	b.Handle("/start", procCommandStart(log, repository))
 	b.Handle("/send", procCommandSend(log, repository))
 
 	return &recv{

@@ -26,13 +26,18 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	amqp := rmq.New(cfg.Rabbit(), log.Named("rabbitmq"))
-	pub, err := amqp.NewPublisher("message", "new", "")
+	pubMessage, err := amqp.NewPublisher(cfg.Rabbit().ExchangeMessage, cfg.Rabbit().ExchangeMessage, "")
+	if err != nil {
+		log.Error("create publisher", zap.Error(err))
+		return
+	}
+	pubChat, err := amqp.NewPublisher(cfg.Rabbit().ExchangeNewChatNotificate, cfg.Rabbit().ExchangeNewChatNotificate, "")
 	if err != nil {
 		log.Error("create publisher", zap.Error(err))
 		return
 	}
 
-	dispatcher, err := dipatcher.New(pub)
+	dispatcher, err := dipatcher.New(pubMessage, pubChat)
 	if err != nil {
 		log.Error("create dispatcher", zap.Error(err))
 		return
