@@ -1,0 +1,8 @@
+# ide
+.idea/
+
+# bin
+bin/
+
+# config
+conf/config.toml

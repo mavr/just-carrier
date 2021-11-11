@@ -1,0 +1,13 @@
+title = "Anonymous Telegram bot config"
+
+[app]
+debug = true
+port = 8082
+new_chat_notification_exchange = "chat.notificate"
+new_message_notification = "msg.notificate"
+
+[bot]
+telegram_bot_token = ""
+
+[rmq]
+connection_string = "amqp://guest:guest@localhost:5672/"
